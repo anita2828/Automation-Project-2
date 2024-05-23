@@ -1,7 +1,8 @@
 import { faker } from '@faker-js/faker';
 //variables
 const Title = faker.word.noun();
-const Description = faker.lorem.sentence();
+//const Description = faker.lorem.sentence();
+const Description = faker.lorem.words();
 
 describe('Issue create', () => {
   beforeEach(() => {
@@ -94,14 +95,14 @@ describe('Issue create', () => {
 
   it('Test Case 1: Custom Issue Creation', () => {
     cy.get('[data-testid="modal:issue-create"]').within(() => {
-      // Type value to description input field
+      cy.get('[data-testid="select:type"]').click();
+      cy.get('[data-testid="select-option:Bug"]').wait(1000).trigger('mouseover').trigger('click');
+      cy.get('[data-testid="icon:bug"]').should('be.visible');
+      // Type value to description input field and title field
       cy.get('.ql-editor').type('My bug description');
       cy.get('.ql-editor').should('have.text', 'My bug description');
       cy.get('input[name="title"]').type('Bug');
       cy.get('input[name="title"]').should('have.value', 'Bug');
-      cy.get('[data-testid="select:type"]').click();
-      cy.get('[data-testid="select-option:Bug"]').wait(1000).trigger('mouseover').trigger('click');
-      cy.get('[data-testid="icon:bug"]').should('be.visible');
       //select Highest priority
       cy.get('[data-testid="select:priority"]').click();
       cy.get('[data-testid="select-option:Highest"]').wait(1000).trigger('mouseover').trigger('click');
@@ -141,14 +142,18 @@ describe('Issue create', () => {
   });
   
   it('Test Case 2: Random Data Plugin Issue Creation', () => {
+    //variables
+    const Title = faker.word.noun();
+    //const Description = faker.lorem.sentence();
+    const Description = faker.lorem.words();
+
     cy.get('[data-testid="modal:issue-create"]').within(() => {
+      //Task is already chosen:
+      cy.get('[data-testid="select:type"]').should('have.text', 'Task')
       cy.get('[class="ql-editor ql-blank"]').type(Description);
       cy.contains(Description).should('be.visible');
       cy.get('input[name="title"]').type(Title);
       cy.get('input[name="title"]').should('have.value', Title);
-      //Task is already chosen:
-      cy.get('[data-testid="select:type"]').should('have.text', 'Task')
-
       cy.get('[data-testid="select:priority"]').click();
       cy.get('[data-testid="select-option:Low"]').wait(1000).trigger('mouseover').trigger('click');
       cy.get('[data-testid="icon:arrow-down"]').should('be.visible');
