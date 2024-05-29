@@ -1,8 +1,4 @@
 import { faker } from '@faker-js/faker';
-//variables
-const Title = faker.word.noun();
-//const Description = faker.lorem.sentence();
-const Description = faker.lorem.words();
 
 describe('Issue create', () => {
   beforeEach(() => {
@@ -15,7 +11,7 @@ describe('Issue create', () => {
       });
   });
 
-  it.skip('Should create an issue and validate it successfully', () => {
+  it('Should create an issue and validate it successfully', { timeout: 60000 },() => {
     // System finds modal for creating issue and does next steps inside of it
     cy.get('[data-testid="modal:issue-create"]').within(() => {
       // Type value to description input field
@@ -82,7 +78,7 @@ describe('Issue create', () => {
       });
   });
 
-  it.skip('Should validate title is required field if missing', () => {
+  it('Should validate title is required field if missing', { timeout: 60000 },() => {
     // System finds modal for creating issue and does next steps inside of it
     cy.get('[data-testid="modal:issue-create"]').within(() => {
       // Try to click create issue button without filling any data
@@ -93,7 +89,7 @@ describe('Issue create', () => {
     });
   });
 
-  it('Test Case 1: Custom Issue Creation', () => {
+  it('Test Case 1: Custom Issue Creation', { timeout: 60000 },() => {
     cy.get('[data-testid="modal:issue-create"]').within(() => {
       cy.get('[data-testid="select:type"]').click();
       cy.get('[data-testid="select-option:Bug"]').wait(1000).trigger('mouseover').trigger('click');
@@ -141,16 +137,15 @@ describe('Issue create', () => {
       });
   });
   
-  it('Test Case 2: Random Data Plugin Issue Creation', () => {
+  it('Test Case 2: Random Data Plugin Issue Creation', { timeout: 60000 },() => {
     //variables
     const Title = faker.word.noun();
-    //const Description = faker.lorem.sentence();
     const Description = faker.lorem.words();
 
     cy.get('[data-testid="modal:issue-create"]').within(() => {
       //Task is already chosen:
       cy.get('[data-testid="select:type"]').should('have.text', 'Task')
-      cy.get('[class="ql-editor ql-blank"]').type(Description);
+      cy.get('.ql-editor').type(Description);
       cy.contains(Description).should('be.visible');
       cy.get('input[name="title"]').type(Title);
       cy.get('input[name="title"]').should('have.value', Title);
