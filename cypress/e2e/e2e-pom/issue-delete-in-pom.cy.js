@@ -17,7 +17,6 @@ describe("Issue delete", () => {
   it("Should delete issue successfully", () => {
     const expectedAmountOfIssuesAfterDelete = 3;
 
-    IssueModal.getIssueDetailModal();
     IssueModal.clickDeleteButton();
     IssueModal.confirmDeletion();
     IssueModal.ensureIssueIsNotVisibleOnBoard(issueTitle);
@@ -29,7 +28,6 @@ describe("Issue delete", () => {
   it("Should cancel deletion process successfully", () => {
     const expectedAmountOfIssuesAfterCancel = 4;
 
-    IssueModal.getIssueDetailModal();
     IssueModal.clickDeleteButton();
     IssueModal.cancelDeletion();
     IssueModal.closeDetailModal();

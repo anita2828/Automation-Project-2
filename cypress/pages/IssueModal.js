@@ -14,7 +14,6 @@ class IssueModal {
     this.cancelDeletionButtonName = "Cancel";
     this.confirmationPopup = '[data-testid="modal:confirm"]';
     this.closeDetailModalButton = '[data-testid="icon:close"]';
-    this.validateAmountOfIssues;
   }
 
   getIssueModal() {
