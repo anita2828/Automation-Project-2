@@ -1,71 +1,77 @@
-describe('Issue comments creating, editing and deleting', () => {
-    beforeEach(() => {
-        cy.visit('/');
-        cy.url().should('eq', `${Cypress.env('baseUrl')}project/board`).then((url) => {
-            cy.visit(url + '/board');
-            cy.contains('This is an issue of type: Task.').click();
-        });
+describe("Issue comments creating, editing and deleting", () => {
+  beforeEach(() => {
+    cy.visit("/");
+    cy.url()
+      .should("eq", `${Cypress.env("baseUrl")}project/board`)
+      .then((url) => {
+        cy.visit(url + "/board");
+        cy.contains("This is an issue of type: Task.").click();
+      });
+  });
+
+  const getIssueDetailsModal = () =>
+    cy.get('[data-testid="modal:issue-details"]');
+
+  const findAddComment = () => cy.contains("Add a comment...");
+
+  const textareaComment = () =>
+    cy.get('textarea[placeholder="Add a comment..."]');
+
+  const saveButtonAndClick = () => cy.contains("button", "Save").click();
+
+  const IssueComment = () => cy.get('[data-testid="issue-comment"]');
+
+  const getConfirmationModal = () => cy.get('[data-testid="modal:confirm"]');
+
+  function addComment(comment) {
+    getIssueDetailsModal().within(() => {
+      findAddComment().click();
+      textareaComment().type(comment);
+      saveButtonAndClick().should("not.exist");
+      IssueComment().should("contain", comment);
+      findAddComment().should("exist");
     });
+  }
 
-    const getIssueDetailsModal = () => cy.get('[data-testid="modal:issue-details"]');
+  function editComment(comment, editedcomment) {
+    getIssueDetailsModal().within(() => {
+      IssueComment()
+        .contains(comment)
+        .parent()
+        .contains("Edit")
+        .click()
+        .should("not.exist");
 
-    it('Should create a comment successfully', () => {
-        const comment = 'TEST_COMMENT';
+      textareaComment().should("contain", comment).clear().type(editedcomment);
 
-        getIssueDetailsModal().within(() => {
-            cy.contains('Add a comment...')
-                .click();
+      saveButtonAndClick().should("not.exist");
 
-            cy.get('textarea[placeholder="Add a comment..."]').type(comment);
-
-            cy.contains('button', 'Save')
-                .click()
-                .should('not.exist');
-
-            cy.contains('Add a comment...').should('exist');
-            cy.get('[data-testid="issue-comment"]').should('contain', comment);
-        });
+      IssueComment().should("contain", "Edit").and("contain", editedcomment);
     });
+  }
 
-    it('Should edit a comment successfully', () => {
-        const previousComment = 'An old silent pond...';
-        const comment = 'TEST_COMMENT_EDITED';
+  function deleteComment(editedcomment) {
+    getIssueDetailsModal();
+    IssueComment().contains(editedcomment).parent().contains("Delete").click();
 
-        getIssueDetailsModal().within(() => {
-            cy.get('[data-testid="issue-comment"]')
-                .first()
-                .contains('Edit')
-                .click()
-                .should('not.exist');
-
-            cy.get('textarea[placeholder="Add a comment..."]')
-                .should('contain', previousComment)
-                .clear()
-                .type(comment);
-
-            cy.contains('button', 'Save')
-                .click()
-                .should('not.exist');
-
-            cy.get('[data-testid="issue-comment"]')
-                .should('contain', 'Edit')
-                .and('contain', comment);
-        });
+    getConfirmationModal().within(() => {
+      cy.contains("Are you sure you want to delete this comment?").should(
+        "be.visible"
+      );
+      cy.contains("button", "Delete comment").click().should("not.exist");
     });
+    getIssueDetailsModal();
+    IssueComment().should("not.contain", editedcomment);
+  }
 
-    it('Should delete a comment successfully', () => {
-        getIssueDetailsModal()
-            .find('[data-testid="issue-comment"]')
-            .contains('Delete')
-            .click();
+  it("Assignment 1: add, edit, delete a comment", () => {
+    const comment = "COMMENT 1";
+    const editedcomment = "COMMENT 1 EDITED";
 
-        cy.get('[data-testid="modal:confirm"]')
-            .contains('button', 'Delete comment')
-            .click()
-            .should('not.exist');
+    addComment(comment);
 
-        getIssueDetailsModal()
-            .find('[data-testid="issue-comment"]')
-            .should('not.exist');
-    });
+    editComment(comment, editedcomment);
+
+    deleteComment(editedcomment);
+  });
 });
